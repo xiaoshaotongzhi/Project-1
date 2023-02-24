@@ -1,6 +1,8 @@
 import sys
 import typing
 
+from math import log
+
 
 class Rand48(object):
     def __init__(self, seed):
