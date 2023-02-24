@@ -86,6 +86,10 @@ def main():
     cpu = CPU(n, ncpu, seed, lam, upper_bound)
     cpu.debug_print()
 
+    r = Rand48(1)
+    r.srand(1)
+    print(r.drand())
+
 
 if __name__ == "__main__":
     main()
