@@ -66,42 +66,49 @@ class CPU:
         self.r = Rand48(s)
         self.util_time = 0
 
-
     def debug_print(self) -> None:
         print("n: {}, ncpu: {}, seed: {}, lam: {}, upperBound: {}"
             .format(self.num_proc, self.num_proc_cpu, self.seed_val,
                     self.lambda_val, self.up_bound))
 
     def next_exp(self) -> float:
-        x = -math.log(self.r.drand())/self.lambda_val
+        x = -math.log(self.r.drand()) / self.lambda_val
         while x > self.up_bound:
-            x = -math.log(self.r.drand())/self.lambda_val
+            x = -math.log(self.r.drand()) / self.lambda_val
         return x
 
     def run_all(self) -> None:
-        print("<<< PROJECT PART I -- process set (n={}) with {} CPU-bound process >>>".format(self.num_proc, self.num_proc_cpu))
+        print("<<< PROJECT PART I -- process set (n={}) with {} CPU-bound process >>>"
+                .format(self.num_proc, self.num_proc_cpu))
         for i in range(self.num_proc):
-            p = Process(chr(i+65), "idk", (i >= self.num_proc - self.num_proc_cpu))
+            p = Process(chr(i + 65), "idk",
+                    (i >= self.num_proc - self.num_proc_cpu))
             self.run_process(p)
 
     def run_process(self, p: Process) -> None:
         p.arrival = math.floor(self.next_exp())
-        p.burst_num = math.ceil(100*self.r.drand())
+        p.burst_num = math.ceil(100 * self.r.drand())
+
         if p.cpu_bound:
-            print("CPU-bound process {}: arrival time {}ms; {} CPU bursts:".format(p.pid, p.arrival,p.burst_num))
+            print("CPU-bound process {}: arrival time {}ms; {} CPU bursts:"
+                    .format(p.pid, p.arrival,p.burst_num))
         else:
-            print("I/O-bound process {}: arrival time {}ms; {} CPU bursts:".format(p.pid, p.arrival,p.burst_num))
+            print("I/O-bound process {}: arrival time {}ms; {} CPU bursts:"
+                    .format(p.pid, p.arrival,p.burst_num))
 
         for i in range(p.burst_num):
             cpu_burst = math.ceil(self.next_exp())
-            io_burst = 10* math.ceil(self.next_exp())
+            io_burst = 10 * math.ceil(self.next_exp())
+
             if p.cpu_bound:
-                cpu_burst = math.ceil(4*self.next_exp())
-                io_burst = math.ceil(10*self.next_exp()/4)
-            if i == p.burst_num-1:
+                cpu_burst = math.ceil(4 * self.next_exp())
+                io_burst = math.ceil(10 * self.next_exp() / 4)
+
+            if i == p.burst_num - 1:
                 print("--> CPU burst {}ms".format(cpu_burst))
             else:
-                print("--> CPU burst {}ms --> I/O burst {}ms".format(cpu_burst, io_burst))
+                print("--> CPU burst {}ms --> I/O burst {}ms"
+                        .format(cpu_burst, io_burst))
 
 
 def main():
@@ -116,7 +123,7 @@ def main():
 
     n = int(sys.argv[1])            # number of processes to simulate 
     ncpu = int(sys.argv[2])         # number of CPU bound processes
-    seed = int(sys.argv[3])       # seed value for random number seq.
+    seed = int(sys.argv[3])         # seed value for random number seq.
     lam = float(sys.argv[4])        # exp. distribution lambda value
     upper_bound = int(sys.argv[5])  # upper bound for valid random nums
 
