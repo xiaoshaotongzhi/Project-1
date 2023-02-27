@@ -12,6 +12,7 @@ class Rand48(object):
 
     def srand(self, seed):
         self.n = (seed << 16) + 0x330e
+        # return self.n
 
     def next(self):
         self.n = int(25214903917 * self.n + 11) & int(2 ** 48 - 1)
@@ -53,6 +54,7 @@ class Process:
         self.arrival = None 
         self.cpu_bound = cpu_b
         self.burst_num = None
+
         # self.bursts = []
 
 
@@ -63,7 +65,7 @@ class CPU:
         self.seed_val = s
         self.lambda_val = l
         self.up_bound = ub
-        self.r = Rand48(s)
+        self.r = r
         self.util_time = 0
 
     def debug_print(self) -> None:
@@ -98,11 +100,14 @@ class CPU:
 
         for i in range(p.burst_num):
             cpu_burst = math.ceil(self.next_exp())
-            io_burst = 10 * math.ceil(self.next_exp())
+            if i != p.burst_num - 1:
+                io_burst = 10*math.ceil( self.next_exp())
 
             if p.cpu_bound:
-                cpu_burst = math.ceil(4 * self.next_exp())
-                io_burst = math.ceil(10 * self.next_exp() / 4)
+                # cpu_burst = math.ceil(4 * self.next_exp())
+                cpu_burst = math.ceil(4* cpu_burst)
+                if i != p.burst_num - 1:
+                    io_burst = math.ceil(io_burst / 4)
 
             if i == p.burst_num - 1:
                 print("--> CPU burst {}ms".format(cpu_burst))
@@ -133,6 +138,8 @@ def main():
 
     r = Rand48(seed)
     r.srand(seed)
+    # for i in range(10):
+    #     print(r.drand())
     cpu = CPU(n, ncpu, seed, lam, upper_bound,r)
     cpu.run_all()
 
